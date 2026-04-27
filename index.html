@@ -12,13 +12,15 @@
             --msg-bg: #21262d;
             --text-main: #c9d1d9;
             --text-muted: #8b949e;
-            --color-rodrigo: #58a6ff; /* Azul para Rodrigo */
-            --color-noelia: #bc8cff;  /* Violeta para Noelia */
+            --color-rodrigo: #58a6ff; 
+            --color-noelia: #bc8cff;  
+            --status-online: #2ea043;
+            --status-away: #d29922; /* Amarillo/Naranja oscuro */
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; height: 100vh; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; height: 100vh; position: relative; }
         
-        .chat-container { width: 100%; max-width: 600px; height: 100%; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        .chat-container { width: 100%; max-width: 600px; height: 100%; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); position: relative;}
         
         .header { background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
         .title-area { display: flex; flex-direction: column; }
@@ -27,14 +29,14 @@
         /* Indicador de estado */
         .status-bar { font-size: 0.7rem; margin-top: 4px; display: flex; gap: 10px; }
         .status-item { display: flex; align-items: center; gap: 4px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #484f58; }
-        .dot.online { background-color: #2ea043; box-shadow: 0 0 5px #2ea043; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #484f58; transition: all 0.3s;}
+        .dot.active { background-color: var(--status-online); box-shadow: 0 0 5px var(--status-online); }
+        .dot.away { background-color: var(--status-away); box-shadow: 0 0 5px var(--status-away); }
         
         .user-selector { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; outline: none; font-size: 0.85rem; }
         
         .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         
-        /* Diferenciación visual de mensajes */
         .message { max-width: 85%; padding: 10px 12px; background-color: var(--msg-bg); position: relative; word-wrap: break-word; font-size: 0.95rem; border: 1px solid var(--border-color); border-left-width: 4px; }
         .message.sent { align-self: flex-end; }
         .message.received { align-self: flex-start; }
@@ -48,11 +50,21 @@
         
         .msg-time { font-size: 0.65rem; opacity: 0.5; text-align: right; margin-top: 6px; display: block; }
         
-        .input-area { background: var(--header-bg); border-top: 1px solid var(--border-color); padding: 15px; display: flex; gap: 10px; align-items: center; }
-        .input-area input { flex: 1; padding: 10px 15px; background-color: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; }
-        .input-area button { background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); width: 40px; height: 40px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-        .input-area button svg { width: 18px; height: 18px; fill: currentColor; }
+        /* Controles inferiores */
+        .input-area { background: var(--header-bg); border-top: 1px solid var(--border-color); padding: 10px 15px; display: flex; gap: 8px; align-items: center; position: relative;}
+        .input-area input { flex: 1; padding: 10px 15px; background-color: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; border-radius: 4px;}
         
+        .btn-action { background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); width: 40px; height: 40px; cursor: pointer; display: flex; justify-content: center; align-items: center; border-radius: 4px; transition: 0.2s;}
+        .btn-action:hover { background-color: var(--bg-color); color: var(--text-main); }
+        .btn-action svg { width: 18px; height: 18px; fill: currentColor; }
+        .btn-emoji { font-size: 1.2rem; }
+
+        /* Panel de Emojis */
+        .emoji-picker { display: none; position: absolute; bottom: 65px; right: 15px; background: var(--header-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; grid-template-columns: repeat(6, 1fr); gap: 8px; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); z-index: 100;}
+        .emoji-picker.show { display: grid; }
+        .emoji-picker span { cursor: pointer; font-size: 1.3rem; text-align: center; transition: transform 0.1s; user-select: none;}
+        .emoji-picker span:hover { transform: scale(1.2); }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: var(--border-color); }
@@ -70,7 +82,7 @@
             </div>
         </div>
         <div>
-            <button onclick="requestNotificationPermission()" style="background:none; border:1px solid #30363d; color:#c9d1d9; padding:2px 5px; margin-right:5px; cursor:pointer; font-size:0.7rem;">🔔 Activar Alertas</button>
+            <button onclick="requestNotificationPermission()" style="background:none; border:1px solid #30363d; color:#c9d1d9; padding:3px 6px; margin-right:5px; cursor:pointer; font-size:0.7rem; border-radius:3px;">🔔 Alertas</button>
             <select id="currentUser" class="user-selector">
                 <option value="Rodrigo">Rodrigo</option>
                 <option value="Noelia">Noelia</option>
@@ -81,56 +93,84 @@
     <div class="chat-box" id="chatBox"></div>
 
     <div class="input-area">
+        <button class="btn-action btn-emoji" onclick="toggleEmojiPicker()" title="Insertar Emoji">☺</button>
         <input type="text" id="messageInput" placeholder=">_ Ingresar comando..." autocomplete="off" onkeypress="handleKeyPress(event)">
-        <button onclick="sendMessage()" title="Ejecutar">
+        <button class="btn-action" onclick="sendMessage()" title="Ejecutar">
             <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
         </button>
+
+        <div class="emoji-picker" id="emojiPicker">
+            <span onclick="addEmoji('😀')">😀</span>
+            <span onclick="addEmoji('😂')">😂</span>
+            <span onclick="addEmoji('🥰')">🥰</span>
+            <span onclick="addEmoji('😎')">😎</span>
+            <span onclick="addEmoji('🤔')">🤔</span>
+            <span onclick="addEmoji('🙄')">🙄</span>
+            <span onclick="addEmoji('👍')">👍</span>
+            <span onclick="addEmoji('👎')">👎</span>
+            <span onclick="addEmoji('🙌')">🙌</span>
+            <span onclick="addEmoji('🔥')">🔥</span>
+            <span onclick="addEmoji('❤️')">❤️</span>
+            <span onclick="addEmoji('💔')">💔</span>
+        </div>
     </div>
 </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbx_b9hF8hmRrR4_DWM475GL8Gfd1sQS_44Tyz8LPBVrjnfMP1NuKudkZ57s_XX6Cqry/exec'; 
+    const API_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI'; 
     
     const chatBox = document.getElementById('chatBox');
     const messageInput = document.getElementById('messageInput');
     const currentUserSelect = document.getElementById('currentUser');
+    const emojiPicker = document.getElementById('emojiPicker');
 
     let lastMessageCount = 0;
     let initialLoad = true;
+    let myCurrentState = 'active'; // Por defecto estamos activos
 
-    // Pedir permisos de notificación
+    // --- DETECCIÓN DE PESTAÑA ACTIVA/INACTIVA ---
+    document.addEventListener('visibilitychange', () => {
+        myCurrentState = document.hidden ? 'away' : 'active';
+        sendHeartbeat(); // Enviamos el cambio de estado inmediatamente
+    });
+
+    // --- LÓGICA DE EMOJIS ---
+    function toggleEmojiPicker() {
+        emojiPicker.classList.toggle('show');
+    }
+    function addEmoji(emoji) {
+        messageInput.value += emoji;
+        messageInput.focus();
+        emojiPicker.classList.remove('show');
+    }
+
+    // --- NOTIFICACIONES ---
     function requestNotificationPermission() {
         if ("Notification" in window) {
             Notification.requestPermission().then(permission => {
-                if (permission === "granted") alert("Notificaciones activadas.");
+                if (permission === "granted") alert("Notificaciones activadas. Recibirás avisos si minimizas la ventana.");
             });
         }
     }
 
-    // Enviar notificación al sistema operativo/celular
     function notifyNewMessage(sender, text) {
-        if ("Notification" in window && Notification.permission === "granted") {
-            // Solo notificamos si el usuario tiene la pestaña oculta o minimizada
-            if (document.hidden) {
-                new Notification(`Mensaje de ${sender}`, {
-                    body: text,
-                    icon: "https://cdn-icons-png.flaticon.com/512/733/733585.png"
-                });
-            }
+        if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+            new Notification(`Mensaje de ${sender}`, {
+                body: text,
+                icon: "https://cdn-icons-png.flaticon.com/512/733/733585.png"
+            });
         }
     }
 
-    // Cargar mensajes y estado online
+    // --- CARGA DE DATOS ---
     async function loadData() {
         try {
             const response = await fetch(API_URL);
             const data = await response.json();
             
-            // 1. Actualizar estados online/offline
             updateStatus('Rodrigo', data.status.Rodrigo);
             updateStatus('Noelia', data.status.Noelia);
 
-            // 2. Actualizar mensajes
             const messages = data.messages;
             if (messages.length !== lastMessageCount) {
                 chatBox.innerHTML = '';
@@ -149,7 +189,6 @@
                     `;
                     chatBox.appendChild(msgDiv);
 
-                    // Si hay mensajes nuevos, no es la carga inicial, y no los envié yo -> Notificar
                     if (!initialLoad && index >= lastMessageCount && !isSentByMe) {
                         notifyNewMessage(msg.sender, msg.text);
                     }
@@ -164,36 +203,44 @@
         }
     }
 
-    function updateStatus(user, isOnline) {
+    // --- INTERFAZ DE ESTADO ---
+    function updateStatus(user, state) {
         const dot = document.getElementById(`dot-${user}`);
         const txt = document.getElementById(`txt-${user}`);
-        if (isOnline) {
-            dot.classList.add('online');
+        
+        dot.className = 'dot'; // Reiniciar clases
+        
+        if (state === 'active') {
+            dot.classList.add('active');
             txt.innerText = 'On';
-            txt.style.color = '#2ea043';
+            txt.style.color = 'var(--status-online)';
+        } else if (state === 'away') {
+            dot.classList.add('away');
+            txt.innerText = 'Ausente';
+            txt.style.color = 'var(--status-away)';
         } else {
-            dot.classList.remove('online');
             txt.innerText = 'Off';
             txt.style.color = 'var(--text-muted)';
         }
     }
 
-    // Enviar latido de conexión
+    // --- ENVÍO DE DATOS ---
     async function sendHeartbeat() {
         const sender = currentUserSelect.value;
         const params = new URLSearchParams();
         params.append('action', 'heartbeat');
         params.append('sender', sender);
+        params.append('state', myCurrentState); // Enviamos si estamos "active" o "away"
         fetch(API_URL, { method: 'POST', body: params }).catch(()=>console.log("Heartbeat falló"));
     }
 
-    // Enviar mensaje
     async function sendMessage() {
         const text = messageInput.value.trim();
         if (!text) return;
 
         const sender = currentUserSelect.value;
         messageInput.value = '';
+        emojiPicker.classList.remove('show'); // Cerrar panel de emojis si estaba abierto
 
         const msgDiv = document.createElement('div');
         msgDiv.className = `message sent`;
@@ -218,7 +265,7 @@
 
     function handleKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
 
-    // Ciclos: Cargar datos cada 3s, enviar latido de que estamos vivos cada 5s
+    // --- CICLOS ---
     setInterval(loadData, 3000);
     setInterval(sendHeartbeat, 5000);
     
