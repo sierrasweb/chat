@@ -6,172 +6,79 @@
     <title>Dashboard Ops</title>
     <style>
         :root {
-            --bg-color: #0d1117; /* Fondo oscuro estilo terminal/editor de código */
+            --bg-color: #0d1117; 
             --header-bg: #161b22;
             --border-color: #30363d;
-            --msg-sent: #1f6feb; /* Azul apagado para tus mensajes */
-            --msg-received: #21262d; /* Gris oscuro para los de ella */
+            --msg-bg: #21262d;
             --text-main: #c9d1d9;
             --text-muted: #8b949e;
+            --color-rodrigo: #58a6ff; /* Azul para Rodrigo */
+            --color-noelia: #bc8cff;  /* Violeta para Noelia */
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 600px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-color);
-            border-left: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-        }
-        .header {
-            background-color: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-        .user-selector {
-            background: var(--bg-color);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 4px 8px;
-            border-radius: 4px;
-            outline: none;
-            font-size: 0.85rem;
-        }
-        .chat-box {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .message {
-            max-width: 85%;
-            padding: 8px 12px;
-            border-radius: 4px; /* Bordes cuadrados, menos aspecto de "chat" */
-            position: relative;
-            word-wrap: break-word;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-        .message.sent {
-            align-self: flex-end;
-            background-color: var(--msg-sent);
-            color: #ffffff;
-        }
-        .message.received {
-            align-self: flex-start;
-            background-color: var(--msg-received);
-            border: 1px solid var(--border-color);
-        }
-        .msg-sender {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            display: block;
-            text-transform: uppercase;
-        }
-        .message.sent .msg-sender {
-            color: #a5d6ff;
-        }
-        .msg-time {
-            font-size: 0.65rem;
-            opacity: 0.7;
-            text-align: right;
-            margin-top: 4px;
-            display: block;
-        }
-        .input-area {
-            background: var(--header-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .input-area input {
-            flex: 1;
-            padding: 10px 15px;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            outline: none;
-            font-size: 0.95rem;
-        }
-        .input-area input:focus {
-            border-color: #58a6ff;
-        }
-        .input-area button {
-            background-color: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-        }
-        .input-area button:hover {
-            background-color: var(--border-color);
-            color: var(--text-main);
-        }
-        .input-area button svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-        /* Ocultar barra de desplazamiento para más sigilo */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color); 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color); 
-            border-radius: 3px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; height: 100vh; }
+        
+        .chat-container { width: 100%; max-width: 600px; height: 100%; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        
+        .header { background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .title-area { display: flex; flex-direction: column; }
+        .main-title { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+        
+        /* Indicador de estado */
+        .status-bar { font-size: 0.7rem; margin-top: 4px; display: flex; gap: 10px; }
+        .status-item { display: flex; align-items: center; gap: 4px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #484f58; }
+        .dot.online { background-color: #2ea043; box-shadow: 0 0 5px #2ea043; }
+        
+        .user-selector { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; outline: none; font-size: 0.85rem; }
+        
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        /* Diferenciación visual de mensajes */
+        .message { max-width: 85%; padding: 10px 12px; background-color: var(--msg-bg); position: relative; word-wrap: break-word; font-size: 0.95rem; border: 1px solid var(--border-color); border-left-width: 4px; }
+        .message.sent { align-self: flex-end; }
+        .message.received { align-self: flex-start; }
+        
+        .message[data-sender="Rodrigo"] { border-left-color: var(--color-rodrigo); }
+        .message[data-sender="Noelia"] { border-left-color: var(--color-noelia); }
+        
+        .msg-sender { font-size: 0.75rem; font-weight: 600; margin-bottom: 6px; display: block; text-transform: uppercase; }
+        .message[data-sender="Rodrigo"] .msg-sender { color: var(--color-rodrigo); }
+        .message[data-sender="Noelia"] .msg-sender { color: var(--color-noelia); }
+        
+        .msg-time { font-size: 0.65rem; opacity: 0.5; text-align: right; margin-top: 6px; display: block; }
+        
+        .input-area { background: var(--header-bg); border-top: 1px solid var(--border-color); padding: 15px; display: flex; gap: 10px; align-items: center; }
+        .input-area input { flex: 1; padding: 10px 15px; background-color: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; }
+        .input-area button { background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); width: 40px; height: 40px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .input-area button svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); }
     </style>
 </head>
 <body>
 
 <div class="chat-container">
     <div class="header">
-        <div>System Log_</div>
-        <select id="currentUser" class="user-selector">
-            <option value="Rodrigo">Rodrigo</option>
-            <option value="Noelia">Noelia</option>
-        </select>
+        <div class="title-area">
+            <div class="main-title">System Log_</div>
+            <div class="status-bar">
+                <div class="status-item"><div class="dot" id="dot-Rodrigo"></div>R: <span id="txt-Rodrigo">Off</span></div>
+                <div class="status-item"><div class="dot" id="dot-Noelia"></div>N: <span id="txt-Noelia">Off</span></div>
+            </div>
+        </div>
+        <div>
+            <button onclick="requestNotificationPermission()" style="background:none; border:1px solid #30363d; color:#c9d1d9; padding:2px 5px; margin-right:5px; cursor:pointer; font-size:0.7rem;">🔔 Activar Alertas</button>
+            <select id="currentUser" class="user-selector">
+                <option value="Rodrigo">Rodrigo</option>
+                <option value="Noelia">Noelia</option>
+            </select>
+        </div>
     </div>
 
-    <div class="chat-box" id="chatBox">
-        </div>
+    <div class="chat-box" id="chatBox"></div>
 
     <div class="input-area">
         <input type="text" id="messageInput" placeholder=">_ Ingresar comando..." autocomplete="off" onkeypress="handleKeyPress(event)">
@@ -189,37 +96,98 @@
     const currentUserSelect = document.getElementById('currentUser');
 
     let lastMessageCount = 0;
+    let initialLoad = true;
 
-    async function loadMessages() {
+    // Pedir permisos de notificación
+    function requestNotificationPermission() {
+        if ("Notification" in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") alert("Notificaciones activadas.");
+            });
+        }
+    }
+
+    // Enviar notificación al sistema operativo/celular
+    function notifyNewMessage(sender, text) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            // Solo notificamos si el usuario tiene la pestaña oculta o minimizada
+            if (document.hidden) {
+                new Notification(`Mensaje de ${sender}`, {
+                    body: text,
+                    icon: "https://cdn-icons-png.flaticon.com/512/733/733585.png"
+                });
+            }
+        }
+    }
+
+    // Cargar mensajes y estado online
+    async function loadData() {
         try {
             const response = await fetch(API_URL);
-            const messages = await response.json();
+            const data = await response.json();
+            
+            // 1. Actualizar estados online/offline
+            updateStatus('Rodrigo', data.status.Rodrigo);
+            updateStatus('Noelia', data.status.Noelia);
 
+            // 2. Actualizar mensajes
+            const messages = data.messages;
             if (messages.length !== lastMessageCount) {
                 chatBox.innerHTML = '';
                 const currentUser = currentUserSelect.value;
 
-                messages.forEach(msg => {
+                messages.forEach((msg, index) => {
                     const isSentByMe = msg.sender === currentUser;
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${isSentByMe ? 'sent' : 'received'}`;
+                    msgDiv.setAttribute('data-sender', msg.sender);
                     
                     msgDiv.innerHTML = `
-                        ${!isSentByMe ? `<span class="msg-sender">${msg.sender}</span>` : ''}
+                        <span class="msg-sender">${msg.sender}</span>
                         <span>${msg.text}</span>
                         <span class="msg-time">${msg.timestamp}</span>
                     `;
                     chatBox.appendChild(msgDiv);
+
+                    // Si hay mensajes nuevos, no es la carga inicial, y no los envié yo -> Notificar
+                    if (!initialLoad && index >= lastMessageCount && !isSentByMe) {
+                        notifyNewMessage(msg.sender, msg.text);
+                    }
                 });
 
                 chatBox.scrollTop = chatBox.scrollHeight;
                 lastMessageCount = messages.length;
+                initialLoad = false;
             }
         } catch (error) {
-            console.error('Error cargando mensajes:', error);
+            console.error('Error cargando datos:', error);
         }
     }
 
+    function updateStatus(user, isOnline) {
+        const dot = document.getElementById(`dot-${user}`);
+        const txt = document.getElementById(`txt-${user}`);
+        if (isOnline) {
+            dot.classList.add('online');
+            txt.innerText = 'On';
+            txt.style.color = '#2ea043';
+        } else {
+            dot.classList.remove('online');
+            txt.innerText = 'Off';
+            txt.style.color = 'var(--text-muted)';
+        }
+    }
+
+    // Enviar latido de conexión
+    async function sendHeartbeat() {
+        const sender = currentUserSelect.value;
+        const params = new URLSearchParams();
+        params.append('action', 'heartbeat');
+        params.append('sender', sender);
+        fetch(API_URL, { method: 'POST', body: params }).catch(()=>console.log("Heartbeat falló"));
+    }
+
+    // Enviar mensaje
     async function sendMessage() {
         const text = messageInput.value.trim();
         if (!text) return;
@@ -229,40 +197,39 @@
 
         const msgDiv = document.createElement('div');
         msgDiv.className = `message sent`;
-        msgDiv.innerHTML = `<span>${text}</span><span class="msg-time">Procesando...</span>`;
+        msgDiv.setAttribute('data-sender', sender);
+        msgDiv.innerHTML = `<span class="msg-sender">${sender}</span><span>${text}</span><span class="msg-time">Enviando...</span>`;
         chatBox.appendChild(msgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
 
         try {
             const params = new URLSearchParams();
+            params.append('action', 'send');
             params.append('sender', sender);
             params.append('text', text);
 
-            await fetch(API_URL, {
-                method: 'POST',
-                body: params
-            });
-            
-            loadMessages();
+            await fetch(API_URL, { method: 'POST', body: params });
+            loadData();
         } catch (error) {
-            console.error('Error enviando mensaje:', error);
-            msgDiv.querySelector('.msg-time').innerText = 'Error de conexión';
+            msgDiv.querySelector('.msg-time').innerText = 'Error';
             msgDiv.querySelector('.msg-time').style.color = '#ff7b72';
         }
     }
 
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    }
+    function handleKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
 
-    setInterval(loadMessages, 3000);
-    loadMessages();
+    // Ciclos: Cargar datos cada 3s, enviar latido de que estamos vivos cada 5s
+    setInterval(loadData, 3000);
+    setInterval(sendHeartbeat, 5000);
+    
+    // Iniciar
+    sendHeartbeat();
+    loadData();
 
     currentUserSelect.addEventListener('change', () => {
         lastMessageCount = 0; 
-        loadMessages();
+        initialLoad = true;
+        loadData();
     });
 </script>
 
